@@ -12,7 +12,13 @@ builder.Services.AddDbContext<DataContext>(opt =>
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularClient",
+        policy => policy.WithOrigins("http://localhost:4200") // your Angular app URL
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,7 +26,8 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
+//app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4000", "https://localhost:4000"));
+app.UseCors("AllowAngularClient");
 app.MapControllers();
 
 app.Run();
